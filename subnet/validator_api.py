@@ -3,6 +3,7 @@ import concurrent.futures
 import json
 import re
 import time
+import random
 from functools import partial
 from datetime import timedelta, datetime, date
 
@@ -10,14 +11,26 @@ from communex.client import CommuneClient  # type: ignore
 from communex.module.client import ModuleClient  # type: ignore
 from communex.module.module import Module  # type: ignore
 from communex.types import Ss58Address  # type: ignore
+from substrateinterface import Keypair  # type: ignore
 
 from utils.log import log
 from utils.protocols import class_dict
 from utils.get_ip_port import get_ip_port
 
-class VeloraValidatorAPI:
-    def __init__(self):
-        pass
+class VeloraValidatorAPI(Module):
+    def __init__(
+        self,
+        key: Keypair,
+        netuid: int,
+        client: CommuneClient,
+        call_timeout: int = 60,
+    ) -> None:
+        super().__init__()
+        self.client = client
+        self.key = key
+        self.netuid = netuid
+        self.val_model = "foo"
+        self.call_timeout = call_timeout
     
     def retrieve_miner_information(self, velora_netuid):
         modules_adresses = self.get_addresses(self.client, velora_netuid)
@@ -94,3 +107,17 @@ class VeloraValidatorAPI:
         # print(f'miner answers: {answers}')
         
         return answers
+    
+    def get_top_miners(self, modules_info):
+        pass
+    
+    def getCurrentPoolMetric(self):
+        modules_info = self.get_top_miners()
+        miner_answers = get_miner_answer(modules_info, synapse)
+        return random.choice(miner_answers)
+    
+    def getCurrentTokenMetric(self):
+        pass
+    
+    def getTokenMetric(self):
+        pass

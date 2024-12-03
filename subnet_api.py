@@ -1,17 +1,36 @@
 import time
+import typer
 import logging
+import getpass
+from typing import Annotated
 from fastapi import FastAPI, Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
+
+from subnet.validator_api import VeloraValidatorAPI
+
+from communex._common import get_node_url  # type: ignore
+from communex.client import CommuneClient  # type: ignore
+from communex.compat.key import classic_load_key  # type: ignore
+
 
 # Setup basic logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class VeloraSubnetAPI:
-    def __init__(self):
+    def __init__(self, 
+        commune_key: Annotated[str, typer.Argument(help="Name of the key present in `~/.commune/key`")],
+        use_testnet: bool = typer.Option(False)
+    ):
         self.app = FastAPI()
+        
+        password = getpass.getpass(prompt="Enther the password:")
+        keypair = classic_load_key(commune_key, password=password)  # type: ignore
+        c_client = CommuneClient(get_node_url(use_testnet = use_testnet))  # type: ignore
+        
+        self.validator_api = VeloraValidatorAPI(keypair, 30, c_client, 60)
 
         # Add CORS middleware to allow cross-origin requests
         self.app.add_middleware(
@@ -34,15 +53,15 @@ class VeloraSubnetAPI:
         # Define routes
         @self.app.get('/current-pool-metric')
         def getCurrentPoolMetric():
-            return {"message": "Current pool metric data"}
+            return self.validator_api.getCurrentPoolMetric()
 
         @self.app.get('/current-token-metric')
         def getCurrentTokenMetric():
-            return {"message": "Current token metric data"}
+            return self.validator_api.getCurrentTokenMetric()
 
         @self.app.get('/token_metric')
         def getTokenMetric():
-            return {"message": "Token metric data"}
+            return self.validator_api.getTokenMetric()
 
 # Middleware to log request processing time
 class RequestTimeLoggingMiddleware(BaseHTTPMiddleware):
