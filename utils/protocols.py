@@ -44,7 +44,6 @@ class CurrentTokenMetricSynapse(BaseModel):
 class CurrentTokenMetricResponse(BaseModel):
     class_name: str = 'CurrentTokenMetricResponse'
 
-
 class PredictionSynapse(BaseModel):
     class_name: str = 'PredictionSynapse'
     timestamp: int

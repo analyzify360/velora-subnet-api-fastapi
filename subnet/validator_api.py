@@ -14,7 +14,10 @@ from communex.types import Ss58Address  # type: ignore
 from substrateinterface import Keypair  # type: ignore
 
 from utils.log import log
-from utils.protocols import class_dict
+from utils.protocols import (class_dict, 
+                             CurrentPoolMetricSynapse, 
+                             CurrentTokenMetricSynapse,
+                             TokenMetricSynapse)
 from utils.get_ip_port import get_ip_port
 
 class VeloraValidatorAPI(Module):
@@ -31,6 +34,22 @@ class VeloraValidatorAPI(Module):
         self.netuid = netuid
         self.val_model = "foo"
         self.call_timeout = call_timeout
+        
+    def get_addresses(self, client: CommuneClient, netuid: int) -> dict[int, str]:
+        """
+        Retrieve all module addresses from the subnet.
+
+        Args:
+            client: The CommuneClient instance used to query the subnet.
+            netuid: The unique identifier of the subnet.
+
+        Returns:
+            A dictionary mapping module IDs to their addresses.
+        """
+
+        # Makes a blockchain query for the miner addresses
+        module_addreses = client.query_map_address(netuid)
+        return module_addreses
     
     def retrieve_miner_information(self, velora_netuid):
         modules_adresses = self.get_addresses(self.client, velora_netuid)
@@ -113,11 +132,18 @@ class VeloraValidatorAPI(Module):
     
     def getCurrentPoolMetric(self):
         modules_info = self.get_top_miners()
-        miner_answers = get_miner_answer(modules_info, synapse)
+        synapse = CurrentPoolMetricSynapse()
+        miner_answers = self.get_miner_answer(modules_info, synapse)
         return random.choice(miner_answers)
     
     def getCurrentTokenMetric(self):
-        pass
+        modules_info = self.get_top_miners()
+        synapse = CurrentTokenMetricSynapse()
+        miner_answers = self.get_miner_answer(modules_info, synapse)
+        return random.choice(miner_answers)
     
     def getTokenMetric(self):
-        pass
+        modules_info = self.get_top_miners()
+        synapse = TokenMetricSynapse()
+        miner_answers = self.get_miner_answer(modules_info, synapse)
+        return random.choice(miner_answers)
