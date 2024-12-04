@@ -6,6 +6,7 @@ import time
 import random
 from functools import partial
 from datetime import timedelta, datetime, date
+from collections import defaultdict
 
 from communex.client import CommuneClient  # type: ignore
 from communex.module.client import ModuleClient  # type: ignore
@@ -127,8 +128,21 @@ class VeloraValidatorAPI(Module):
         
         return answers
     
-    def get_top_miners(self, modules_info):
-        pass
+    def get_top_miners(self, k = 5):
+        miner_weights = self.client.query_map_weights(netuid=self.netuid)
+        
+        # Dictionary to store the sum of weights for each miner_uid
+        miner_weight_sums = defaultdict(int)
+        
+        # Sum weights for each miner_uid
+        for validator_uid, miner_data in miner_weights.items():
+            for miner_uid, miner_weight in miner_data:
+                miner_weight_sums[miner_uid] += miner_weight
+
+        # Sort miners by total weight in descending order and pick top k
+        top_k_miners = sorted(miner_weight_sums.items(), key=lambda x: x[1], reverse=True)[:k]
+        
+        return [miner_uid for miner_uid, _ in top_k_miners]
     
     def getCurrentPoolMetric(self):
         modules_info = self.get_top_miners()
