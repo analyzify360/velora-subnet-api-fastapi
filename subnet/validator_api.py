@@ -128,7 +128,7 @@ class VeloraValidatorAPI(Module):
         
         return answers
     
-    def get_top_miners(self, k = 5):
+    def get_top_miners(self, k = 5) -> dict[int, tuple[list[str], Ss58Address]]:
         miner_weights = self.client.query_map_weights(netuid=self.netuid)
         
         # Dictionary to store the sum of weights for each miner_uid
@@ -142,13 +142,22 @@ class VeloraValidatorAPI(Module):
         # Sort miners by total weight in descending order and pick top k
         top_k_miners = sorted(miner_weight_sums.items(), key=lambda x: x[1], reverse=True)[:k]
         
-        return [miner_uid for miner_uid, _ in top_k_miners]
+        miner_uids = [miner_uid for miner_uid, _ in top_k_miners]
+        module_infos = self.retrieve_miner_information(self.netuid)
+        top_miners = {miner_uid: module_infos[miner_uid] for miner_uid in miner_uids if miner_uid in module_infos}
+        return top_miners
     
     def getCurrentPoolMetric(self):
         modules_info = self.get_top_miners()
-        synapse = CurrentPoolMetricSynapse()
+        synapse = CurrentPoolMetricSynapse(page_limit=10, page_number=1, search_query='', sort_by='timestamp')
         miner_answers = self.get_miner_answer(modules_info, synapse)
-        return random.choice(miner_answers)
+        miner_answers = [answer for answer in miner_answers if answer is not None]
+        response = random.choice(miner_answers)
+        if not response:
+            return None
+        return response['data'].dict().get('data')
+        
+        
     
     def getCurrentTokenMetric(self):
         modules_info = self.get_top_miners()
