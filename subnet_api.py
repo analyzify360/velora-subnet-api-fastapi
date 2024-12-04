@@ -2,6 +2,9 @@ import time
 import typer
 import logging
 import getpass
+import os
+
+from dotenv import load_dotenv
 from typing import Annotated
 from fastapi import FastAPI, Request
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -94,7 +97,3 @@ class ExceptionHandlingMiddleware(BaseHTTPMiddleware):
             )
         return response
 
-if __name__ == "__main__":
-    import uvicorn
-    api = VeloraSubnetAPI()
-    uvicorn.run(api.app, host="0.0.0.0", port=8000)
