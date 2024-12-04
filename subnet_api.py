@@ -97,3 +97,8 @@ class ExceptionHandlingMiddleware(BaseHTTPMiddleware):
             )
         return response
 
+if __name__ == "__main__":
+    import uvicorn
+    load_dotenv()
+    app = VeloraSubnetAPI(os.getenv("COMMUNE_KEY"), False)
+    uvicorn.run(app.app, host="0.0.0.0", port=8000)
