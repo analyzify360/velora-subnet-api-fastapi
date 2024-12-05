@@ -15,10 +15,13 @@ from communex.types import Ss58Address  # type: ignore
 from substrateinterface import Keypair  # type: ignore
 
 from utils.log import log
-from utils.protocols import (class_dict, 
-                             CurrentPoolMetricSynapse, 
-                             CurrentTokenMetricSynapse,
-                             TokenMetricSynapse)
+from utils.protocols import (
+    class_dict, 
+    CurrentPoolMetricSynapse, 
+    CurrentTokenMetricSynapse,
+    TokenMetricSynapse,
+    RecentPoolEventSynapse
+)
 from utils.get_ip_port import get_ip_port
 
 class VeloraValidatorAPI(Module):
@@ -147,9 +150,15 @@ class VeloraValidatorAPI(Module):
         top_miners = {miner_uid: module_infos[miner_uid] for miner_uid in miner_uids if miner_uid in module_infos}
         return top_miners
     
-    def getCurrentPoolMetric(self):
+    def getCurrentPoolMetric(self, req):
+        print('req', req.query_params)
         modules_info = self.get_top_miners()
-        synapse = CurrentPoolMetricSynapse(page_limit=10, page_number=1, search_query='', sort_by='timestamp')
+        page_limit = req.query_params.get('page_limit', 10) if int(req.query_params.get('page_limit', '10')) < 100 else 100
+        page_number = req.query_params.get('page_number', 1)
+        search_query = req.query_params.get('search_query', '')
+        sort_by = req.query_params.get('sort_by', '')
+        sort_order = req.query_params.get('sort_order', 'desc')
+        synapse = CurrentPoolMetricSynapse(page_limit=page_limit, page_number=page_number, search_query=search_query, sort_by=sort_by, sort_order=sort_order)
         miner_answers = self.get_miner_answer(modules_info, synapse)
         miner_answers = [answer for answer in miner_answers if answer is not None]
         response = random.choice(miner_answers)
@@ -170,3 +179,15 @@ class VeloraValidatorAPI(Module):
         synapse = TokenMetricSynapse()
         miner_answers = self.get_miner_answer(modules_info, synapse)
         return random.choice(miner_answers)
+    
+    def getRecentPoolEvent(self, req):
+        page_limit = req.query_params.get('page_limit', 10) if int(req.query_params.get('page_limit', '10')) < 100 else 100
+        filter_by = req.query_params.get('filter_by', 'all')
+        modules_info = self.get_top_miners()
+        synapse = RecentPoolEventSynapse(filter_by=filter_by)
+        miner_answers = self.get_miner_answer(modules_info, synapse)
+        miner_answers = [answer for answer in miner_answers if answer is not None]
+        response = random.choice(miner_answers)
+        if not response:
+            return None
+        return response["data"].dict().get("data")

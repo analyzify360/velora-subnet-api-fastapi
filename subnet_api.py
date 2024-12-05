@@ -38,7 +38,7 @@ class VeloraSubnetAPI:
         # Add CORS middleware to allow cross-origin requests
         self.app.add_middleware(
             CORSMiddleware,
-            allow_origins=["*"],  # You can specify allowed origins
+            allow_origins=["http://localhost:3001", "*"],  # You can specify allowed origins
             allow_credentials=True,
             allow_methods=["*"],  # Allow all HTTP methods
             allow_headers=["*"],  # Allow all headers
@@ -55,8 +55,8 @@ class VeloraSubnetAPI:
 
         # Define routes
         @self.app.get('/current-pool-metric')
-        def getCurrentPoolMetric():
-            return self.validator_api.getCurrentPoolMetric()
+        def getCurrentPoolMetric(req: Request):
+            return self.validator_api.getCurrentPoolMetric(req)
 
         @self.app.get('/current-token-metric')
         def getCurrentTokenMetric():
@@ -65,6 +65,10 @@ class VeloraSubnetAPI:
         @self.app.get('/token_metric')
         def getTokenMetric():
             return self.validator_api.getTokenMetric()
+        
+        @self.app.get('/recent-pool-event')
+        def getRecentPoolEvent(req: Request):
+            return self.validator_api.getRecentPoolEvent(req)
 
 # Middleware to log request processing time
 class RequestTimeLoggingMiddleware(BaseHTTPMiddleware):
