@@ -194,7 +194,7 @@ class VeloraValidatorAPI(Module):
         if not response:
             self.logger.log_info("No miner managed to give an answer")
             return None
-        return random.choice(miner_answers)
+        return {"tokens": response['data'].dict().get('data'), "total_token_count": response['data'].dict().get('total_token_count')}
     
     def getTokenMetric(self):
         modules_info = self.get_top_miners()
