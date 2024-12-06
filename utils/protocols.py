@@ -85,9 +85,18 @@ class CurrentTokenMetricSynapse(BaseModel):
     search_query: str
     sort_by: str
 
+class CurrentTokenMetric(BaseModel):
+    token_address: str
+    open_price: float
+    close_price: float
+    high_price: float
+    low_price: float
+    total_volume: float
+    total_liquidity: float
+    
 class CurrentTokenMetricResponse(BaseModel):
     class_name: str = 'CurrentTokenMetricResponse'
-    data: list[dict]
+    data: list[CurrentTokenMetric]
     total_token_count: int
 
 class PredictionSynapse(BaseModel):
