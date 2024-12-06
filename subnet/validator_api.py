@@ -14,7 +14,7 @@ from communex.module.module import Module  # type: ignore
 from communex.types import Ss58Address  # type: ignore
 from substrateinterface import Keypair  # type: ignore
 
-from utils.log import log
+from utils.log import log, Logger
 from utils.protocols import (
     class_dict, 
     CurrentPoolMetricSynapse, 
@@ -38,6 +38,7 @@ class VeloraValidatorAPI(Module):
         self.netuid = netuid
         self.val_model = "foo"
         self.call_timeout = call_timeout
+        self.logger = Logger("VeloraValidatorAPI")
         
     def get_addresses(self, client: CommuneClient, netuid: int) -> dict[int, str]:
         """
@@ -151,27 +152,48 @@ class VeloraValidatorAPI(Module):
         return top_miners
     
     def getCurrentPoolMetric(self, req):
-        print('req', req.query_params)
         modules_info = self.get_top_miners()
         page_limit = req.query_params.get('page_limit', 10) if int(req.query_params.get('page_limit', '10')) < 100 else 100
         page_number = req.query_params.get('page_number', 1)
         search_query = req.query_params.get('search_query', '')
         sort_by = req.query_params.get('sort_by', '')
+        fee_tier = req.query_params.get('fee_tier', 0)
+        liquidity_threshold = req.query_params.get('liquidity_threshold', 0.0)
+        volume_threshold = req.query_params.get('volume_threshold', 0.0)
         sort_order = req.query_params.get('sort_order', 'desc')
-        synapse = CurrentPoolMetricSynapse(page_limit=page_limit, page_number=page_number, search_query=search_query, sort_by=sort_by, sort_order=sort_order)
+        synapse = CurrentPoolMetricSynapse(page_limit=page_limit, page_number=page_number, search_query=search_query, fee_tier=fee_tier, liquidity_threshold=liquidity_threshold, volume_threshold=volume_threshold, sort_by=sort_by, sort_order=sort_order)
         miner_answers = self.get_miner_answer(modules_info, synapse)
         miner_answers = [answer for answer in miner_answers if answer is not None]
+        if not miner_answers:
+            self.logger.log_info("No miner managed to give an answer")
+            return None
         response = random.choice(miner_answers)
         if not response:
+            self.logger.log_info("No miner managed to give an answer")
             return None
-        return response['data'].dict().get('data')
+        self.logger.log_info(f"Current pool metric response: {response['data'].dict().get('data')}")
+        return {"pools": response['data'].dict().get('data'), "total_pool_count": response['data'].dict().get('total_pool_count')}
         
         
     
-    def getCurrentTokenMetric(self):
+    def getCurrentTokenMetric(self, req):
         modules_info = self.get_top_miners()
-        synapse = CurrentTokenMetricSynapse()
+        
+        page_limit = req.query_params.get('page_limit', 10) if int(req.query_params.get('page_limit', '10')) < 100 else 100
+        page_number = req.query_params.get('page_number', 1)
+        search_query = req.query_params.get('search_query', '')
+        sort_by = req.query_params.get('sort_by', 'volume')
+        
+        synapse = CurrentTokenMetricSynapse(page_limit=page_limit, page_number=page_number, search_query=search_query, sort_by=sort_by)
         miner_answers = self.get_miner_answer(modules_info, synapse)
+        miner_answers = [answer for answer in miner_answers if answer is not None]
+        if not miner_answers:
+            self.logger.log_info("No miner managed to give an answer")
+            return None
+        response = random.choice(miner_answers)
+        if not response:
+            self.logger.log_info("No miner managed to give an answer")
+            return None
         return random.choice(miner_answers)
     
     def getTokenMetric(self):

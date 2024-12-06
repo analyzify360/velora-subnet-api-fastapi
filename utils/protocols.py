@@ -44,16 +44,20 @@ class CurrentPoolMetric(BaseModel):
     
 class CurrentPoolMetricSynapse(BaseModel):
     class_name: str = 'CurrentPoolMetricSynapse'
-    page_limit: int = 10
-    page_number: int = 1
-    search_query: str = ''
-    sort_by: str = ''
-    sort_order: str = 'desc'
+    page_limit: int
+    page_number: int
+    fee_tier: int
+    liquidity_threshold: float
+    volume_threshold: float
+    search_query: str
+    sort_by: str
+    sort_order: str
 
 class CurrentPoolMetricResponse(BaseModel):
     class_name: str = 'CurrentPoolMetricResponse'
     data: list[CurrentPoolMetric]
     overall_data_hash: str
+    total_pool_count: int
 
 class PoolEvent(BaseModel):
     timestamp: int
@@ -76,9 +80,15 @@ class RecentPoolEventResponse(BaseModel):
 
 class CurrentTokenMetricSynapse(BaseModel):
     class_name: str = 'CurrentTokenMetricSynapse'
+    page_limit: int
+    page_number: int
+    search_query: str
+    sort_by: str
 
 class CurrentTokenMetricResponse(BaseModel):
     class_name: str = 'CurrentTokenMetricResponse'
+    data: list[dict]
+    total_token_count: int
 
 class PredictionSynapse(BaseModel):
     class_name: str = 'PredictionSynapse'
