@@ -20,12 +20,39 @@ class PoolEventResponse(BaseModel):
     data: list[dict]
     overall_data_hash: str
 
-class PoolMetricSynapse(BaseModel):
-    class_name: str = 'PoolMetricSynapse'
+class PoolMetricAPISynapse(BaseModel):
+    class_name: str = 'PoolMetricAPISynapse'
+    pool_address: str
+    start_timestamp: int
+    end_timestamp: int
+    page_limit: int
+    page_number: int
+    
+class PoolMetricAPI(BaseModel):
+    timestamp: int
+    price: float
+    liquidity_token0: float
+    liquidity_token1: float
+    volume_token0: float
+    volume_token1: float
 
-class PoolMetricResponse(BaseModel):
-    class_name: str = 'PoolMetricResponse'
+class TokenPairData(BaseModel):
+    token0_price: float
+    token1_price: float
+    token0_symbol: str
+    token1_symbol: str
+    token0_address: str
+    token1_address: str
+    fee: int
+    pool_address: str   
 
+
+class PoolMetricAPIResponse(BaseModel):
+    class_name: str = 'PoolMetricAPIResponse'
+    data: list[PoolMetricAPI]
+    token_pair_data: TokenPairData
+    total_pool_count: int
+    
 class TokenMetricSynapse(BaseModel):
     class_name: str = 'TokenMetricSynapse'
 
@@ -61,6 +88,7 @@ class CurrentPoolMetricResponse(BaseModel):
 
 class PoolEvent(BaseModel):
     timestamp: int
+    pool_address: str
     token0_symbol: str
     token1_symbol: str
     amount0: float
@@ -110,8 +138,8 @@ class_dict = {
     'HealthCheckResponse': HealthCheckResponse,
     'PoolEventSynapse': PoolEventSynapse,
     'PoolEventResponse': PoolEventResponse,
-    'PoolMetricSynapse': PoolMetricSynapse,
-    'PoolMetricResponse' : PoolMetricResponse,
+    'PoolMetricAPISynapse': PoolMetricAPISynapse,
+    'PoolMetricAPIResponse' : PoolMetricAPIResponse,
     'TokenMetricSynapse': TokenMetricSynapse,
     'TokenMetricResponse' : TokenMetricResponse,
     'CurrentPoolMetricSynapse': CurrentPoolMetricSynapse,

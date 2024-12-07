@@ -61,6 +61,10 @@ class VeloraSubnetAPI:
         @self.app.get('/current-token-metric')
         def getCurrentTokenMetric(req: Request):
             return self.validator_api.getCurrentTokenMetric(req)
+        
+        @self.app.get('/pool-metric')
+        def getPoolMetric(req: Request):
+            return self.validator_api.getPoolMetric(req)
 
         @self.app.get('/token_metric')
         def getTokenMetric():

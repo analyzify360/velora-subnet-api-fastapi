@@ -20,6 +20,7 @@ from utils.protocols import (
     CurrentPoolMetricSynapse, 
     CurrentTokenMetricSynapse,
     TokenMetricSynapse,
+    PoolMetricAPISynapse,
     RecentPoolEventSynapse
 )
 from utils.get_ip_port import get_ip_port
@@ -201,6 +202,29 @@ class VeloraValidatorAPI(Module):
         synapse = TokenMetricSynapse()
         miner_answers = self.get_miner_answer(modules_info, synapse)
         return random.choice(miner_answers)
+    
+    def getPoolMetric(self, req):
+        modules_info = self.get_top_miners()
+        
+        page_limit = req.query_params.get('page_limit', 10) if int(req.query_params.get('page_limit', '10')) < 100 else 100
+        page_number = req.query_params.get('page_number', 1)
+        pool_address = req.query_params.get('pool_address', '')
+        start_timestamp = req.query_params.get('start_timestamp', int(time.time()) - 86400)
+        end_timestamp = req.query_params.get('end_timestamp', int(time.time()))
+        
+        synapse = PoolMetricAPISynapse(page_limit=page_limit, page_number=page_number, pool_address=pool_address, start_timestamp=start_timestamp, end_timestamp=end_timestamp)
+        
+        miner_answers = self.get_miner_answer(modules_info, synapse)
+        miner_answers = [answer for answer in miner_answers if answer is not None]
+        
+        if not miner_answers:
+            self.logger.log_info("No miner managed to give an answer")
+            return None
+        response = random.choice(miner_answers)
+        if not response:
+            self.logger.log_info("No miner managed to give an answer")
+            return None
+        return {"pools": response['data'].dict().get('data'), "token_pair_data": response['data'].dict().get('token_pair_data'), "total_pool_count": response['data'].dict().get('total_pool_count')}
     
     def getRecentPoolEvent(self, req):
         page_limit = req.query_params.get('page_limit', 10) if int(req.query_params.get('page_limit', '10')) < 100 else 100
