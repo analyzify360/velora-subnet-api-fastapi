@@ -2,6 +2,9 @@ import time
 import typer
 import logging
 import getpass
+import os
+
+from dotenv import load_dotenv
 from typing import Annotated
 from fastapi import FastAPI, Request
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -35,7 +38,7 @@ class VeloraSubnetAPI:
         # Add CORS middleware to allow cross-origin requests
         self.app.add_middleware(
             CORSMiddleware,
-            allow_origins=["*"],  # You can specify allowed origins
+            allow_origins=["http://localhost:3001", "*"],  # You can specify allowed origins
             allow_credentials=True,
             allow_methods=["*"],  # Allow all HTTP methods
             allow_headers=["*"],  # Allow all headers
@@ -52,16 +55,24 @@ class VeloraSubnetAPI:
 
         # Define routes
         @self.app.get('/current-pool-metric')
-        def getCurrentPoolMetric():
-            return self.validator_api.getCurrentPoolMetric()
+        def getCurrentPoolMetric(req: Request):
+            return self.validator_api.getCurrentPoolMetric(req)
 
         @self.app.get('/current-token-metric')
-        def getCurrentTokenMetric():
-            return self.validator_api.getCurrentTokenMetric()
+        def getCurrentTokenMetric(req: Request):
+            return self.validator_api.getCurrentTokenMetric(req)
+        
+        @self.app.get('/pool-metric')
+        def getPoolMetric(req: Request):
+            return self.validator_api.getPoolMetric(req)
 
         @self.app.get('/token_metric')
         def getTokenMetric():
             return self.validator_api.getTokenMetric()
+        
+        @self.app.get('/recent-pool-event')
+        def getRecentPoolEvent(req: Request):
+            return self.validator_api.getRecentPoolEvent(req)
 
 # Middleware to log request processing time
 class RequestTimeLoggingMiddleware(BaseHTTPMiddleware):
@@ -96,5 +107,6 @@ class ExceptionHandlingMiddleware(BaseHTTPMiddleware):
 
 if __name__ == "__main__":
     import uvicorn
-    api = VeloraSubnetAPI()
-    uvicorn.run(api.app, host="0.0.0.0", port=8000)
+    load_dotenv()
+    app = VeloraSubnetAPI(os.getenv("COMMUNE_KEY"), False)
+    uvicorn.run(app.app, host="0.0.0.0", port=8000)
