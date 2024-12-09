@@ -19,7 +19,7 @@ from utils.protocols import (
     class_dict, 
     CurrentPoolMetricSynapse, 
     CurrentTokenMetricSynapse,
-    TokenMetricSynapse,
+    TokenMetricAPISynapse,
     PoolMetricAPISynapse,
     RecentPoolEventSynapse
 )
@@ -204,7 +204,7 @@ class VeloraValidatorAPI(Module):
         token_address = req.query_params.get('address', '')
         start_timestamp = req.query_params.get('start_timestamp', int(time.time()) - 86400)
         end_timestamp = req.query_params.get('end_timestamp', int(time.time()))
-        synapse = TokenMetricSynapse(page_limit=page_limit, page_number=page_number, token_address=token_address, start_timestamp=start_timestamp, end_timestamp=end_timestamp)
+        synapse = TokenMetricAPISynapse(page_limit=page_limit, page_number=page_number, token_address=token_address, start_timestamp=start_timestamp, end_timestamp=end_timestamp)
         miner_answers = self.get_miner_answer(modules_info, synapse)
         miner_answers = [answer for answer in miner_answers if answer is not None]
         if not miner_answers:
@@ -215,8 +215,7 @@ class VeloraValidatorAPI(Module):
             self.logger.log_info("No miner managed to give an answer")
             return None
         return {"tokens": response['data'].dict().get('data'), "token_data": response['data'].dict().get('token_data'), "total_token_count": response['data'].dict().get('total_token_count')}
-        return random.choice(miner_answers)
-    
+        
     def getPoolMetric(self, req):
         modules_info = self.get_top_miners()
         
