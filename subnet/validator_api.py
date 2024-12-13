@@ -222,10 +222,11 @@ class VeloraValidatorAPI(Module):
         page_limit = req.query_params.get('page_limit', 288) if int(req.query_params.get('page_limit', '288')) < 288 else 288
         page_number = req.query_params.get('page_number', 1)
         pool_address = req.query_params.get('address', '')
-        start_timestamp = req.query_params.get('start_timestamp', int(time.time()) - 86400)
-        end_timestamp = req.query_params.get('end_timestamp', int(time.time()))
+        period = req.query_params.get('period', '1d')
+        start_timestamp = req.query_params.get('start_timestamp', 0)
+        end_timestamp = req.query_params.get('end_timestamp', 0)
         
-        synapse = PoolMetricAPISynapse(page_limit=page_limit, page_number=page_number, pool_address=pool_address, start_timestamp=start_timestamp, end_timestamp=end_timestamp)
+        synapse = PoolMetricAPISynapse(page_limit=page_limit, page_number=page_number, pool_address=pool_address, period=period, start_timestamp=start_timestamp, end_timestamp=end_timestamp)
         
         miner_answers = self.get_miner_answer(modules_info, synapse)
         miner_answers = [answer for answer in miner_answers if answer is not None]
