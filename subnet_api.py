@@ -29,8 +29,8 @@ class VeloraSubnetAPI:
     ):
         self.app = FastAPI()
         
-        password = getpass.getpass(prompt="Enther the password:")
-        keypair = classic_load_key(commune_key, password=password)  # type: ignore
+        # password = getpass.getpass(prompt="Enther the password:")
+        keypair = classic_load_key(commune_key)  # type: ignore
         c_client = CommuneClient(get_node_url(use_testnet = use_testnet))  # type: ignore
         
         self.validator_api = VeloraValidatorAPI(keypair, 30, c_client, 60)
