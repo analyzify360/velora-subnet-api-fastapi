@@ -21,7 +21,8 @@ from utils.protocols import (
     CurrentTokenMetricSynapse,
     TokenMetricAPISynapse,
     PoolMetricAPISynapse,
-    RecentPoolEventSynapse
+    RecentPoolEventSynapse,
+    PoolEventSynapse,
 )
 from utils.get_ip_port import get_ip_port
 
@@ -199,13 +200,16 @@ class VeloraValidatorAPI(Module):
     
     def getTokenMetric(self, req):
         modules_info = self.get_top_miners()
-        page_limit = req.query_params.get('page_limit', 288) if int(req.query_params.get('page_limit', '10')) < 288 else 288
-        page_number = req.query_params.get('page_number', 1)
+        page_limit = int(req.query_params.get('page_limit', '10000'))
+        page_number = int(req.query_params.get('page_number', '1'))
         token_address = req.query_params.get('address', '')
+        interval = req.query_params.get('interval', '5min')
         period = req.query_params.get('period', '1d')
         start_timestamp = req.query_params.get('start_timestamp', 0)
         end_timestamp = req.query_params.get('end_timestamp', 0)
-        synapse = TokenMetricAPISynapse(page_limit=page_limit, page_number=page_number, token_address=token_address, period=period, start_timestamp=start_timestamp, end_timestamp=end_timestamp)
+        if page_limit > 10000:
+            raise ValueError("Page limit should be less than 10000")
+        synapse = TokenMetricAPISynapse(page_limit=page_limit, page_number=page_number, token_address=token_address, interval=interval, period=period, start_timestamp=start_timestamp, end_timestamp=end_timestamp)
         miner_answers = self.get_miner_answer(modules_info, synapse)
         miner_answers = [answer for answer in miner_answers if answer is not None]
         if not miner_answers:
@@ -246,6 +250,19 @@ class VeloraValidatorAPI(Module):
         filter_by = req.query_params.get('filter_by', 'all')
         modules_info = self.get_top_miners()
         synapse = RecentPoolEventSynapse(filter_by=filter_by)
+        miner_answers = self.get_miner_answer(modules_info, synapse)
+        miner_answers = [answer for answer in miner_answers if answer is not None]
+        response = random.choice(miner_answers)
+        if not response:
+            return None
+        return response["data"].dict().get("data")
+    
+    def getPoolEvent(self, req):
+        pool_address = req.query_params.get('address', '')
+        start_datetime = req.query_params.get('start_datetime', 0)
+        end_datetime = req.query_params.get('end_datetime', 0)
+        modules_info = self.get_top_miners()
+        synapse = PoolEventSynapse(pool_address=pool_address, start_datetime=start_datetime, end_datetime=end_datetime)
         miner_answers = self.get_miner_answer(modules_info, synapse)
         miner_answers = [answer for answer in miner_answers if answer is not None]
         response = random.choice(miner_answers)

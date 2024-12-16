@@ -68,7 +68,14 @@ class VeloraSubnetAPI:
 
         @self.app.get('/token-metric')
         def getTokenMetric(req: Request):
-            return self.validator_api.getTokenMetric(req)
+            try:
+                return self.validator_api.getTokenMetric(req)
+            except Exception as e:
+                logger.error(f"Error: {str(e)}")
+                return JSONResponse(
+                    status_code=400,
+                    content={"detail": str(e)}
+                )
         
         @self.app.get('/recent-pool-event')
         def getRecentPoolEvent(req: Request):
@@ -109,4 +116,4 @@ if __name__ == "__main__":
     import uvicorn
     load_dotenv()
     app = VeloraSubnetAPI(os.getenv("COMMUNE_KEY"), False)
-    uvicorn.run(app.app, host="0.0.0.0", port=8000)
+    uvicorn.run(app.app, host="0.0.0.0", port=8089)
