@@ -15,14 +15,24 @@ class PoolEventSynapse(BaseModel):
     pool_address: str
     start_datetime: int
     end_datetime: int
-    page_limit: Optional[int]
-    page_number: Optional[int]
 
 class PoolEventResponse(BaseModel):
     class_name: str = 'PoolEventResponse'
     data: list[dict]
     overall_data_hash: str
 
+class PoolEventAPISynapse(BaseModel):
+    class_name: str = 'PoolEventAPISynapse'
+    pool_address: str
+    start_datetime: int
+    end_datetime: int
+    page_limit: Optional[int]
+    page_number: Optional[int]
+
+class PoolEventAPIResponse(BaseModel):
+    class_name: str = 'PoolEventAPIResponse'
+    data: list[dict]
+    total_event_count: int
 class PoolMetricAPISynapse(BaseModel):
     class_name: str = 'PoolMetricAPISynapse'
     pool_address: str
@@ -174,6 +184,8 @@ class_dict = {
     'HealthCheckResponse': HealthCheckResponse,
     'PoolEventSynapse': PoolEventSynapse,
     'PoolEventResponse': PoolEventResponse,
+    'PoolEventAPISynapse': PoolEventAPISynapse,
+    'PoolEventAPIResponse': PoolEventAPIResponse,
     'PoolMetricAPISynapse': PoolMetricAPISynapse,
     'PoolMetricAPIResponse' : PoolMetricAPIResponse,
     'TokenMetricSynapse': TokenMetricSynapse,

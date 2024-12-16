@@ -266,7 +266,7 @@ class VeloraValidatorAPI(Module):
         if page_limit > 10000:
             raise ValueError("Page limit should be less than 10000")
         modules_info = self.get_top_miners()
-        synapse = PoolEventSynapse(pool_address=pool_address, start_datetime=start_datetime, end_datetime=end_datetime)
+        synapse = PoolEventSynapse(pool_address=pool_address, start_datetime=start_datetime, end_datetime=end_datetime, page_limit= page_limit, page_number=page_number)
         miner_answers = self.get_miner_answer(modules_info, synapse)
         miner_answers = [answer for answer in miner_answers if answer is not None]
         response = random.choice(miner_answers)
