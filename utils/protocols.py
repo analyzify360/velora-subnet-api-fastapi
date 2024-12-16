@@ -180,6 +180,33 @@ class SwapEventAPIResponse(BaseModel):
     data: list[dict]
     total_event_count: int
 
+class MintEventAPISynapse(BaseModel):
+    class_name: str = 'MintEventAPISynapse'
+    pool_address: str
+    start_datetime: int
+    end_datetime: int
+    page_limit: Optional[int]
+    page_number: Optional[int]
+
+class MintEventAPIResponse(BaseModel):
+    class_name: str = 'MintEventAPIResponse'
+    data: list[dict]
+    total_event_count: int
+
+class BurnEventAPISynapse(BaseModel):
+    class_name: str = 'BurnEventAPISynapse'
+    pool_address: str
+    start_datetime: int
+    end_datetime: int
+    page_limit: Optional[int]
+    page_number: Optional[int]
+
+class BurnEventAPIResponse(BaseModel):
+    class_name: str = 'BurnEventAPIResponse'
+    data: list[dict]
+    total_event_count: int
+
+
 class_dict = {
     'HealthCheckSynapse': HealthCheckSynapse,
     'HealthCheckResponse': HealthCheckResponse,
@@ -187,6 +214,10 @@ class_dict = {
     'PoolEventResponse': PoolEventResponse,
     'SwapEventAPISynapse': SwapEventAPISynapse,
     'SwapEventAPIResponse': SwapEventAPIResponse,
+    'MintEventAPISynapse': MintEventAPISynapse,
+    'MintEventAPIResponse': MintEventAPIResponse,
+    'BurnEventAPISynapse': BurnEventAPISynapse,
+    'BurnEventAPIResponse': BurnEventAPIResponse,
     'PoolMetricAPISynapse': PoolMetricAPISynapse,
     'PoolMetricAPIResponse' : PoolMetricAPIResponse,
     'TokenMetricSynapse': TokenMetricSynapse,
