@@ -22,7 +22,7 @@ from utils.protocols import (
     TokenMetricAPISynapse,
     PoolMetricAPISynapse,
     RecentPoolEventSynapse,
-    PoolEventSynapse,
+    SwapEventAPISynapse
 )
 from utils.get_ip_port import get_ip_port
 
@@ -257,7 +257,7 @@ class VeloraValidatorAPI(Module):
             return None
         return response["data"].dict().get("data")
     
-    def getPoolEvent(self, req):
+    def getSwapEvent(self, req):
         pool_address = req.query_params.get('address', '')
         page_limit = int(req.query_params.get('page_limit', '10000'))
         page_number = int(req.query_params.get('page_number', '1'))
@@ -266,7 +266,7 @@ class VeloraValidatorAPI(Module):
         if page_limit > 10000:
             raise ValueError("Page limit should be less than 10000")
         modules_info = self.get_top_miners()
-        synapse = PoolEventSynapse(pool_address=pool_address, start_datetime=start_datetime, end_datetime=end_datetime, page_limit= page_limit, page_number=page_number)
+        synapse = SwapEventAPISynapse(pool_address=pool_address, start_datetime=start_datetime, end_datetime=end_datetime, page_limit= page_limit, page_number=page_number)
         miner_answers = self.get_miner_answer(modules_info, synapse)
         miner_answers = [answer for answer in miner_answers if answer is not None]
         response = random.choice(miner_answers)
