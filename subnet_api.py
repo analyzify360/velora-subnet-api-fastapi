@@ -91,7 +91,7 @@ class VeloraSubnetAPI:
         
         @self.app.get('/burn-event')
         def getBurnEvent(req: Request):
-            return self.validator_api.getPoolEvent(req=req, event_tyep="burn")
+            return self.validator_api.getPoolEvent(req=req, event_type="burn")
 
 # Middleware to log request processing time
 class RequestTimeLoggingMiddleware(BaseHTTPMiddleware):
