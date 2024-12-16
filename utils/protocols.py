@@ -170,8 +170,8 @@ class PredictionResponse(BaseModel):
 class SwapEventAPISynapse(BaseModel):
     class_name: str = 'SwapEventAPISynapse'
     pool_address: str
-    start_datetime: int
-    end_datetime: int
+    start_timestamp: int
+    end_timestamp: int
     page_limit: Optional[int]
     page_number: Optional[int]
 
@@ -183,8 +183,8 @@ class SwapEventAPIResponse(BaseModel):
 class MintEventAPISynapse(BaseModel):
     class_name: str = 'MintEventAPISynapse'
     pool_address: str
-    start_datetime: int
-    end_datetime: int
+    start_timestamp: int
+    end_timestamp: int
     page_limit: Optional[int]
     page_number: Optional[int]
 
@@ -196,8 +196,8 @@ class MintEventAPIResponse(BaseModel):
 class BurnEventAPISynapse(BaseModel):
     class_name: str = 'BurnEventAPISynapse'
     pool_address: str
-    start_datetime: int
-    end_datetime: int
+    start_timestamp: int
+    end_timestamp: int
     page_limit: Optional[int]
     page_number: Optional[int]
 

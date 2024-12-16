@@ -263,18 +263,18 @@ class VeloraValidatorAPI(Module):
         pool_address = req.query_params.get('address', '')
         page_limit = int(req.query_params.get('page_limit', '10000'))
         page_number = int(req.query_params.get('page_number', '1'))
-        start_datetime = req.query_params.get('start_datetime', 0)
-        end_datetime = req.query_params.get('end_datetime', 0)
+        start_timestamp = req.query_params.get('start_timestamp', 0)
+        end_timestamp = req.query_params.get('end_timestamp', 0)
         if page_limit > 10000:
             raise ValueError("Page limit should be less than 10000")
         modules_info = self.get_top_miners()
         match event_type:
             case "swap":
-                synapse = SwapEventAPISynapse(pool_address=pool_address, start_datetime=start_datetime, end_datetime=end_datetime, page_limit= page_limit, page_number=page_number)
+                synapse = SwapEventAPISynapse(pool_address=pool_address, start_timestamp=start_timestamp, end_timestamp=end_timestamp, page_limit= page_limit, page_number=page_number)
             case "mint":
-                synapse = MintEventAPISynapse(pool_address=pool_address, start_datetime=start_datetime, end_datetime=end_datetime, page_limit= page_limit, page_number=page_number)
+                synapse = MintEventAPISynapse(pool_address=pool_address, start_timestamp=start_timestamp, end_timestamp=end_timestamp, page_limit= page_limit, page_number=page_number)
             case "burn":
-                synapse = BurnEventAPISynapse(pool_address=pool_address, start_datetime=start_datetime, end_datetime=end_datetime, page_limit= page_limit, page_number=page_number)
+                synapse = BurnEventAPISynapse(pool_address=pool_address, start_timestamp=start_timestamp, end_timestamp=end_timestamp, page_limit= page_limit, page_number=page_number)
             case _:
                 raise ValueError("Invalid event type")
         miner_answers = self.get_miner_answer(modules_info, synapse)
