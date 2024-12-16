@@ -80,6 +80,10 @@ class VeloraSubnetAPI:
         @self.app.get('/recent-pool-event')
         def getRecentPoolEvent(req: Request):
             return self.validator_api.getRecentPoolEvent(req)
+        
+        @self.app.get('/pool-event')
+        def getPoolEvent(req: Request):
+            return self.validator_api.getPoolEvent(req)
 
 # Middleware to log request processing time
 class RequestTimeLoggingMiddleware(BaseHTTPMiddleware):

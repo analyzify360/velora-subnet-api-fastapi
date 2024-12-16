@@ -15,6 +15,8 @@ class PoolEventSynapse(BaseModel):
     pool_address: str
     start_datetime: int
     end_datetime: int
+    page_limit: Optional[int]
+    page_number: Optional[int]
 
 class PoolEventResponse(BaseModel):
     class_name: str = 'PoolEventResponse'

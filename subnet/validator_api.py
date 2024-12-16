@@ -259,8 +259,12 @@ class VeloraValidatorAPI(Module):
     
     def getPoolEvent(self, req):
         pool_address = req.query_params.get('address', '')
+        page_limit = int(req.query_params.get('page_limit', '10000'))
+        page_number = int(req.query_params.get('page_number', '1'))
         start_datetime = req.query_params.get('start_datetime', 0)
         end_datetime = req.query_params.get('end_datetime', 0)
+        if page_limit > 10000:
+            raise ValueError("Page limit should be less than 10000")
         modules_info = self.get_top_miners()
         synapse = PoolEventSynapse(pool_address=pool_address, start_datetime=start_datetime, end_datetime=end_datetime)
         miner_answers = self.get_miner_answer(modules_info, synapse)
@@ -269,3 +273,4 @@ class VeloraValidatorAPI(Module):
         if not response:
             return None
         return response["data"].dict().get("data")
+    
